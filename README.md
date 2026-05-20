@@ -217,8 +217,7 @@ Courier-Management-System/
 ├── README.md
 ├── Sql.md
 ├── schema.sql
-├── queries.sql
-└── assets/
+└── queries.sql/
 ```
 
 ---
