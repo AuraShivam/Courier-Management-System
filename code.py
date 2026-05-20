@@ -1,18 +1,12 @@
-# =========================================================
-# Courier Management System
-# =========================================================
+# Task 1
+
+# 1. Check Delivery Status
 
 import re
 import random
 import string
 import time
 
-
-# =========================================================
-# TASK 1 — Control Flow Statements
-# =========================================================
-
-# 1. Check Delivery Status
 
 def check_delivery_status(status):
 
@@ -27,9 +21,7 @@ status = "Delivered"
 print("Is Delivered:", check_delivery_status(status))
 
 
-# =========================================================
 # 2. Categorize Parcels by Weight
-# =========================================================
 
 def categorize_parcel(weight):
 
@@ -45,9 +37,7 @@ def categorize_parcel(weight):
 print("Parcel Category:", categorize_parcel(3.5))
 
 
-# =========================================================
 # 3. User Authentication
-# =========================================================
 
 def login(username, password):
 
@@ -60,9 +50,7 @@ def login(username, password):
 print("Login Status:", login("admin", "password"))
 
 
-# =========================================================
 # 4. Courier Assignment Logic
-# =========================================================
 
 class Courier:
 
@@ -116,9 +104,7 @@ order = Order(101, 4)
 assign_courier(order, available_couriers)
 
 
-# =========================================================
-# TASK 2 — Loops and Iteration
-# =========================================================
+# Task 2
 
 # 5. Display Orders for Customer
 
@@ -140,9 +126,7 @@ for order in orders:
     print(order)
 
 
-# =========================================================
 # 6. Track Courier Location
-# =========================================================
 
 locations = [
     "Warehouse",
@@ -164,9 +148,7 @@ def track_courier():
 track_courier()
 
 
-# =========================================================
-# TASK 3 — Arrays and Data Structures
-# =========================================================
+# Task 3
 
 # 7. Parcel Tracking History
 
@@ -198,9 +180,7 @@ parcel.add_update("Out for Delivery")
 parcel.show_history()
 
 
-# =========================================================
 # 8. Find Nearest Courier
-# =========================================================
 
 class NearbyCourier:
 
@@ -238,9 +218,7 @@ nearest = find_nearest_available_courier([c1, c2])
 print("\nNearest Courier:", nearest.name)
 
 
-# =========================================================
-# TASK 4 — Strings and Functions
-# =========================================================
+# Task 4
 
 # 9. Parcel Tracking
 
@@ -266,9 +244,7 @@ def track_parcel(tracking_number):
 track_parcel("TN123456")
 
 
-# =========================================================
 # 10. Customer Validation
-# =========================================================
 
 def validate_customer_info(data, detail):
 
@@ -293,9 +269,7 @@ print(
 )
 
 
-# =========================================================
 # 11. Address Formatting
-# =========================================================
 
 def format_address(address):
 
@@ -310,9 +284,7 @@ print(
 )
 
 
-# =========================================================
 # 12. Order Confirmation Email
-# =========================================================
 
 def generate_order_confirmation_email(
     order_number,
@@ -353,9 +325,7 @@ print(
 )
 
 
-# =========================================================
 # 13. Calculate Shipping Cost
-# =========================================================
 
 def calculate_shipping_cost(distance, parcel_weight):
 
@@ -370,9 +340,7 @@ print(
 )
 
 
-# =========================================================
 # 14. Password Generator
-# =========================================================
 
 def generate_password(length=10):
 
@@ -391,9 +359,7 @@ def generate_password(length=10):
 print("\nGenerated Password:", generate_password())
 
 
-# =========================================================
 # 15. Find Similar Addresses
-# =========================================================
 
 def find_similar_addresses(address, address_list):
 
@@ -423,8 +389,3 @@ print("\nSimilar Addresses:")
 
 for addr in result:
     print(addr)
-
-
-# =========================================================
-# END OF PROJECT
-# =========================================================
