@@ -3,9 +3,116 @@
 ## TASK 1 Database Design
 
 ## TASK 1.1 ERD
+  # Courier Management System - ER Diagram
 
-![image](https://github.com/nandini-gangrade/Courier-Management-System/assets/87817417/52d13cb5-6529-44fb-9b0e-8a06253b3ab8)
+```mermaid
+erDiagram
 
+    USERS {
+        int UserID PK
+        string Name
+        string Email
+        string Password
+        string ContactNumber
+        string Address
+    }
+
+    CUSTOMERS {
+        int CustomerID PK
+        string Name
+        string Email
+        string ContactNumber
+        string Address
+    }
+
+    COURIERS {
+        int CourierID PK
+        int UserID FK
+        string SenderName
+        string SenderAddress
+        string ReceiverName
+        string ReceiverAddress
+        decimal Weight
+        string Status
+        string TrackingNumber
+        date DeliveryDate
+    }
+
+    ORDERS {
+        int OrderID PK
+        int CustomerID FK
+        int CourierID FK
+        date OrderDate
+        date DeliveryDate
+        string Status
+    }
+
+    PARCELS {
+        int ParcelID PK
+        int OrderID FK
+        decimal ParcelWeight
+        string ParcelDescription
+    }
+
+    COURIERSERVICES {
+        int ServiceID PK
+        string ServiceName
+        decimal Cost
+    }
+
+    EMPLOYEE {
+        int EmployeeID PK
+        string Name
+        string Email
+        string ContactNumber
+        string Role
+        decimal Salary
+    }
+
+    LOCATION {
+        int LocationID PK
+        string LocationName
+        string Address
+    }
+
+    PAYMENT {
+        int PaymentID PK
+        int CourierID FK
+        int LocationID FK
+        decimal Amount
+        date PaymentDate
+    }
+
+    COURIERSERVICEMAPPING {
+        int CourierID FK
+        int ServiceID FK
+    }
+
+    EMPLOYEECOURIER {
+        int EmployeeID FK
+        int CourierID FK
+    }
+
+    USERS ||--|| COURIERS : manages
+
+    CUSTOMERS ||--o{ ORDERS : places
+
+    COURIERS ||--o{ ORDERS : delivers
+
+    ORDERS ||--o{ PARCELS : contains
+
+    COURIERS ||--o{ PAYMENT : receives
+
+    LOCATION ||--o{ PAYMENT : processes
+
+    COURIERS ||--o{ COURIERSERVICEMAPPING : mapped_to
+
+    COURIERSERVICES ||--o{ COURIERSERVICEMAPPING : includes
+
+    EMPLOYEE ||--o{ EMPLOYEECOURIER : assigned
+
+    COURIERS ||--o{ EMPLOYEECOURIER : handled_by
+```
 
 ## TASK 1.2 Relationship (Cardinality)
 
