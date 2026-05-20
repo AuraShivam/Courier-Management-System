@@ -413,10 +413,102 @@ INSERT INTO Parcels (ParcelID, OrderID, ParcelWeight, ParcelDescription) VALUES
 ```
 
 ### Generated Table
+# Customers Table
 
-![image](https://github.com/nandini-gangrade/Courier-Management-System/assets/87817417/87b359db-2b27-4610-b21c-d4c395f40041)
-![image](https://github.com/nandini-gangrade/Courier-Management-System/assets/87817417/7c79b65b-528a-445a-8511-3452ab403141)
-![image](https://github.com/nandini-gangrade/Courier-Management-System/assets/87817417/45c949e9-7ef6-4a53-b59e-28ab15a3bbe2)
+```sql
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    Name VARCHAR(255),
+    Email VARCHAR(255) UNIQUE,
+    ContactNumber VARCHAR(20),
+    Address TEXT
+);
+
+INSERT INTO Customers (CustomerID, Name, Email, ContactNumber, Address) VALUES
+(1, 'John Doe', 'john@example.com', '1234567890', '123 Main Street'),
+(2, 'Jane Smith', 'jane@example.com', '0987654321', '456 Elm Street'),
+(3, 'Alice Johnson', 'alice@example.com', '9876543210', '789 Oak Street'),
+(4, 'Bob Brown', 'bob@example.com', '5678901234', '101 Pine Street'),
+(5, 'Emily Wilson', 'emily@example.com', '3456789012', '202 Maple Street'),
+(6, 'David Lee', 'david@example.com', '4567890123', '303 Cedar Street'),
+(7, 'Sarah Clark', 'sarah@example.com', '6543210987', '404 Birch Street');
+
+SELECT * FROM Customers;
+```
+
+---
+
+# Couriers Table
+
+```sql
+CREATE TABLE Couriers (
+    CourierID INT PRIMARY KEY,
+    UserID INT,
+    SenderName VARCHAR(255),
+    SenderAddress TEXT,
+    ReceiverName VARCHAR(255),
+    ReceiverAddress TEXT,
+    Weight DECIMAL(5,2),
+    Status VARCHAR(50),
+    TrackingNumber VARCHAR(20) UNIQUE,
+    DeliveryDate DATE
+);
+
+INSERT INTO Couriers (
+    CourierID,
+    UserID,
+    SenderName,
+    SenderAddress,
+    ReceiverName,
+    ReceiverAddress,
+    Weight,
+    Status,
+    TrackingNumber,
+    DeliveryDate
+) VALUES
+(201, 101, 'John Smith', '123 Main Street', 'Alice Johnson', '789 Oak Street', 2.5, 'In Transit', 'TN123456', '2024-05-05'),
+(202, 102, 'Jane Doe', '456 Elm Street', 'Bob Brown', '101 Pine Street', 3.2, 'Delivered', 'TN654321', '2024-04-25'),
+(203, 103, 'Alice Johnson', '789 Oak Street', 'Emily Wilson', '202 Maple Street', 1.8, 'Pending', 'TN987654', NULL),
+(204, 104, 'Bob Brown', '101 Pine Street', 'David Lee', '303 Cedar Street', 4.7, 'In Transit', 'TN567890', NULL),
+(205, 105, 'Emily Wilson', '202 Maple Street', 'Sarah Clark', '404 Birch Street', 3.9, 'Delivered', 'TN234567', '2024-04-30'),
+(206, 106, 'David Lee', '303 Cedar Street', 'John Smith', '123 Main Street', 5.1, 'Pending', 'TN345678', NULL),
+(207, 107, 'Sarah Clark', '404 Birch Street', 'Jane Doe', '456 Elm Street', 2.3, 'In Transit', 'TN456789', '2024-05-02');
+
+SELECT * FROM Couriers;
+```
+
+---
+
+# Orders Table
+
+```sql
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT,
+    CourierID INT,
+    OrderDate DATE,
+    DeliveryDate DATE,
+    Status VARCHAR(50)
+);
+
+INSERT INTO Orders (
+    OrderID,
+    CustomerID,
+    CourierID,
+    OrderDate,
+    DeliveryDate,
+    Status
+) VALUES
+(301, 1, 201, '2024-04-20', '2024-04-25', 'Delivered'),
+(302, 2, 202, '2024-04-22', '2024-04-27', 'Delivered'),
+(303, 3, 203, '2024-04-24', NULL, 'Pending'),
+(304, 4, 204, '2024-04-26', NULL, 'In Transit'),
+(305, 5, 205, '2024-04-28', '2024-05-01', 'Delivered'),
+(306, 6, 206, '2024-04-30', NULL, 'Pending'),
+(307, 7, 207, '2024-05-02', '2024-05-05', 'In Transit');
+
+SELECT * FROM Orders;
+```
 
 <br>
 
