@@ -2,8 +2,7 @@
 
 ## TASK 1 Database Design
 
-## TASK 1.1 ERD
-  # Courier Management System - ER Diagram
+## TASK 1.1 ER Diagram
 
 ```mermaid
 erDiagram
