@@ -1,7 +1,9 @@
 # Courier Management System
 
-A SQL-based Courier Management System project that demonstrates database design, ER modeling, SQL queries, joins, aggregate functions, and subqueries.
-
+The Courier Management System is designed to manage courier deliveries,
+customers, parcels, payments, and employee assignments using SQL and Python.
+The project demonstrates database management concepts including ER modeling,
+SQL queries, joins, aggregate functions, and Python database connectivity.
 ---
 
 # Features
