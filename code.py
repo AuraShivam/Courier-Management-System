@@ -1,107 +1,134 @@
-# Task 1
-
-# 1. Check Delivery Status
-
+import pyodbc
 import re
 import random
 import string
 import time
 
 
-def check_delivery_status(status):
+# Database Connection
 
-    if status.lower() == "delivered":
-        return True
+conn = pyodbc.connect(
+    'DRIVER={SQL Server};'
+    'SERVER=localhost;'
+    'DATABASE=CourierManagementSystem;'
+    'Trusted_Connection=yes;'
+)
+
+cursor = conn.cursor()
+
+
+# Task 1
+
+# 1. Check Delivery Status
+
+def check_delivery_status(order_id):
+
+    query = """
+    SELECT Status
+    FROM Orders
+    WHERE OrderID = ?
+    """
+
+    cursor.execute(query, (order_id,))
+
+    result = cursor.fetchone()
+
+    if result:
+
+        status = result[0]
+
+        if status.lower() == "delivered":
+            return True
 
     return False
 
 
-status = "Delivered"
-
-print("Is Delivered:", check_delivery_status(status))
+print("Is Delivered:", check_delivery_status(301))
 
 
 # 2. Categorize Parcels by Weight
 
-def categorize_parcel(weight):
+def categorize_parcel(parcel_id):
 
-    if weight < 2:
-        return "Light"
+    query = """
+    SELECT ParcelWeight
+    FROM Parcels
+    WHERE ParcelID = ?
+    """
 
-    elif 2 <= weight <= 5:
-        return "Medium"
+    cursor.execute(query, (parcel_id,))
 
-    return "Heavy"
+    result = cursor.fetchone()
+
+    if result:
+
+        weight = result[0]
+
+        if weight < 2:
+            return "Light"
+
+        elif 2 <= weight <= 5:
+            return "Medium"
+
+        return "Heavy"
+
+    return "Parcel Not Found"
 
 
-print("Parcel Category:", categorize_parcel(3.5))
+print("Parcel Category:", categorize_parcel(401))
 
 
 # 3. User Authentication
 
-def login(username, password):
+def login(email, password):
 
-    if username == "admin" and password == "password":
-        return True
+    query = """
+    SELECT *
+    FROM Users
+    WHERE Email = ? AND Password = ?
+    """
 
-    return False
+    cursor.execute(query, (email, password))
+
+    result = cursor.fetchone()
+
+    return result is not None
 
 
-print("Login Status:", login("admin", "password"))
+print(
+    "Login Status:",
+    login("john.smith@example.com", "password123")
+)
 
 
 # 4. Courier Assignment Logic
 
-class Courier:
+def assign_courier(order_id):
 
-    def __init__(self, name, capacity, available):
+    query = """
+    SELECT TOP 1 CourierID
+    FROM Couriers
+    WHERE Status = 'In Transit'
+    """
 
-        self.name = name
-        self.capacity = capacity
-        self.available = available
+    cursor.execute(query)
 
-    def is_available(self):
+    result = cursor.fetchone()
 
-        return self.available
+    if result:
 
-    def has_capacity(self, weight):
+        courier_id = result[0]
 
-        return self.capacity >= weight
+        print(
+            f"Order {order_id} assigned "
+            f"to Courier {courier_id}"
+        )
 
-    def assign_order(self, order):
-
-        print(f"Order assigned to {self.name}")
-
-
-class Order:
-
-    def __init__(self, order_id, weight):
-
-        self.order_id = order_id
-        self.weight = weight
+    else:
+        print("No courier available")
 
 
-def assign_courier(order, couriers):
-
-    for courier in couriers:
-
-        if courier.is_available() and courier.has_capacity(order.weight):
-
-            courier.assign_order(order)
-
-            return courier
-
-    return None
-
-
-courier1 = Courier("John", 10, True)
-courier2 = Courier("David", 5, False)
-
-available_couriers = [courier1, courier2]
-
-order = Order(101, 4)
-
-assign_courier(order, available_couriers)
+assign_courier(301)
 
 
 # Task 2
@@ -110,12 +137,17 @@ assign_courier(order, available_couriers)
 
 def get_orders_for_customer(customer_id):
 
-    orders = {
-        1: ["ORD101", "ORD102"],
-        2: ["ORD201", "ORD202"]
-    }
+    query = """
+    SELECT *
+    FROM Orders
+    WHERE CustomerID = ?
+    """
 
-    return orders.get(customer_id, [])
+    cursor.execute(query, (customer_id,))
+
+    orders = cursor.fetchall()
+
+    return orders
 
 
 orders = get_orders_for_customer(1)
@@ -128,35 +160,46 @@ for order in orders:
 
 # 6. Track Courier Location
 
-locations = [
-    "Warehouse",
-    "Sorting Center",
-    "Out for Delivery",
-    "Delivered"
-]
+def track_courier(courier_id):
 
+    query = """
+    SELECT SenderAddress,
+           ReceiverAddress
+    FROM Couriers
+    WHERE CourierID = ?
+    """
 
-def track_courier():
+    cursor.execute(query, (courier_id,))
 
-    for location in locations:
+    result = cursor.fetchone()
 
-        print("Current Location:", location)
+    if result:
+
+        print("Courier Route:")
+
+        print("From:", result[0])
 
         time.sleep(1)
 
+        print("To:", result[1])
 
-track_courier()
+    else:
+        print("Courier not found")
+
+
+track_courier(201)
 
 
 # Task 3
 
-# 7. Parcel Tracking History
+# 7. Tracking History of Parcel
 
 class Parcel:
 
     def __init__(self, tracking_number):
 
         self.tracking_number = tracking_number
+
         self.tracking_history = []
 
     def add_update(self, update):
@@ -180,61 +223,56 @@ parcel.add_update("Out for Delivery")
 parcel.show_history()
 
 
-# 8. Find Nearest Courier
+# 8. Find Nearest Available Courier
 
-class NearbyCourier:
+def find_nearest_available_courier():
 
-    def __init__(self, name, distance, available):
+    query = """
+    SELECT TOP 1 CourierID,
+                 SenderAddress
+    FROM Couriers
+    WHERE Status = 'In Transit'
+    """
 
-        self.name = name
-        self.distance = distance
-        self.available = available
+    cursor.execute(query)
 
-    def is_available(self):
+    result = cursor.fetchone()
 
-        return self.available
+    if result:
 
+        print(
+            f"Nearest Available Courier: "
+            f"{result[0]}"
+        )
 
-def find_nearest_available_courier(couriers):
-
-    available = []
-
-    for courier in couriers:
-
-        if courier.is_available():
-            available.append(courier)
-
-    if not available:
-        return None
-
-    return min(available, key=lambda x: x.distance)
+    else:
+        print("No courier available")
 
 
-c1 = NearbyCourier("Courier A", 12, True)
-c2 = NearbyCourier("Courier B", 5, True)
-
-nearest = find_nearest_available_courier([c1, c2])
-
-print("\nNearest Courier:", nearest.name)
+find_nearest_available_courier()
 
 
 # Task 4
 
 # 9. Parcel Tracking
 
-parcel_tracking = {
-    "TN123456": "In Transit",
-    "TN654321": "Delivered"
-}
-
-
 def track_parcel(tracking_number):
 
-    if tracking_number in parcel_tracking:
+    query = """
+    SELECT Status
+    FROM Couriers
+    WHERE TrackingNumber = ?
+    """
+
+    cursor.execute(query, (tracking_number,))
+
+    result = cursor.fetchone()
+
+    if result:
 
         print(
-            f"Parcel {tracking_number} is "
-            f"{parcel_tracking[tracking_number]}"
+            f"Parcel {tracking_number} "
+            f"is {result[0]}"
         )
 
     else:
@@ -244,28 +282,27 @@ def track_parcel(tracking_number):
 track_parcel("TN123456")
 
 
-# 10. Customer Validation
+# 10. Customer Data Validation
 
-def validate_customer_info(data, detail):
+def validate_customer_info(name, phone):
 
-    if detail.lower() == "name":
+    valid_name = bool(
+        re.match(r"^[A-Za-z ]+$", name)
+    )
 
-        return bool(re.match(r"^[A-Za-z ]+$", data))
+    valid_phone = bool(
+        re.match(r"^\d{10}$", phone)
+    )
 
-    elif detail.lower() == "address":
-
-        return bool(re.match(r"^[A-Za-z0-9\s,'-]*$", data))
-
-    elif detail.lower() == "phone":
-
-        return bool(re.match(r"^\d{10}$", data))
-
-    return False
+    return valid_name and valid_phone
 
 
 print(
-    "\nValid Name:",
-    validate_customer_info("John Doe", "name")
+    "\nCustomer Validation:",
+    validate_customer_info(
+        "John Doe",
+        "9876543210"
+    )
 )
 
 
@@ -276,67 +313,100 @@ def format_address(address):
     return address.title()
 
 
-print(
-    "\nFormatted Address:",
-    format_address(
-        "123 main street new york ny"
+query = """
+SELECT Address
+FROM Customers
+WHERE CustomerID = 1
+"""
+
+cursor.execute(query)
+
+result = cursor.fetchone()
+
+if result:
+
+    print(
+        "\nFormatted Address:",
+        format_address(result[0])
     )
-)
 
 
 # 12. Order Confirmation Email
 
-def generate_order_confirmation_email(
-    order_number,
-    customer_name,
-    delivery_address,
-    delivery_date
-):
+def generate_order_confirmation_email(order_id):
 
-    email = f'''
+    query = """
+    SELECT Customers.Name,
+           Customers.Address,
+           Orders.DeliveryDate
+    FROM Orders
+    INNER JOIN Customers
+    ON Orders.CustomerID = Customers.CustomerID
+    WHERE Orders.OrderID = ?
+    """
+
+    cursor.execute(query, (order_id,))
+
+    result = cursor.fetchone()
+
+    if result:
+
+        customer_name = result[0]
+
+        address = result[1]
+
+        delivery_date = result[2]
+
+        email = f'''
 Dear {customer_name},
 
 Your order has been confirmed.
 
-Order Number: {order_number}
+Order Number: {order_id}
 
 Delivery Address:
-{delivery_address}
+{address}
 
 Expected Delivery Date:
 {delivery_date}
 
 Thank you for choosing our service.
-
-Regards,
-Courier Team
 '''
 
-    return email
+        print(email)
 
 
-print(
-    generate_order_confirmation_email(
-        "ORD123",
-        "John Doe",
-        "123 Main Street",
-        "2024-05-25"
-    )
-)
+generate_order_confirmation_email(301)
 
 
 # 13. Calculate Shipping Cost
 
-def calculate_shipping_cost(distance, parcel_weight):
+def calculate_shipping_cost(parcel_id):
 
-    cost_per_km = 2
+    query = """
+    SELECT ParcelWeight
+    FROM Parcels
+    WHERE ParcelID = ?
+    """
 
-    return (distance * cost_per_km) + (parcel_weight * 5)
+    cursor.execute(query, (parcel_id,))
+
+    result = cursor.fetchone()
+
+    if result:
+
+        weight = result[0]
+
+        cost = weight * 10
+
+        return cost
+
+    return 0
 
 
 print(
     "Shipping Cost:",
-    calculate_shipping_cost(100, 5)
+    calculate_shipping_cost(401)
 )
 
 
@@ -356,36 +426,35 @@ def generate_password(length=10):
     )
 
 
-print("\nGenerated Password:", generate_password())
+print(
+    "\nGenerated Password:",
+    generate_password()
+)
 
 
 # 15. Find Similar Addresses
 
-def find_similar_addresses(address, address_list):
+def find_similar_addresses(keyword):
 
-    similar = []
+    query = """
+    SELECT Address
+    FROM Customers
+    WHERE Address LIKE ?
+    """
 
-    for addr in address_list:
+    cursor.execute(query, ('%' + keyword + '%',))
 
-        if address.lower() in addr.lower():
+    results = cursor.fetchall()
 
-            similar.append(addr)
+    print("\nSimilar Addresses:")
 
-    return similar
+    for address in results:
+        print(address[0])
 
 
-addresses = [
-    "123 Main Street New York",
-    "456 Park Avenue",
-    "789 Main Street California"
-]
+find_similar_addresses("Street")
 
-result = find_similar_addresses(
-    "Main Street",
-    addresses
-)
 
-print("\nSimilar Addresses:")
+# Close Connection
 
-for addr in result:
-    print(addr)
+conn.close()
